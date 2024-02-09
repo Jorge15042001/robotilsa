@@ -53,7 +53,7 @@ def set_system_date():
 
 
 @swag_from("./documentation/get_hidrophones.yaml")
-@app.route("/controller/hydrophone/all>", methods=['GET'])
+@app.route("/controller/hydrophone/all", methods=['GET'])
 def get_hydrophones():
     return {
         "success": True,
@@ -63,7 +63,7 @@ def get_hydrophones():
 
 
 @swag_from("./documentation/get_hidrophone.yaml")
-@app.route("/controller/hydrophone/<id>>", methods=['GET'])
+@app.route("/controller/hydrophone/<id>", methods=['GET'])
 def get_hydrophone(id):
     return {
         "success": True,
