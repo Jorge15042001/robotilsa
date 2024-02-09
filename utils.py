@@ -27,7 +27,7 @@ def set_system_time(unix_timestamp):
         time_difference = abs(current_time.timestamp() - unix_timestamp)
         tolerance = 5  # Adjust this tolerance as needed
         if time_difference <= tolerance:
-            return False, "Fallo al conigurar fecha y hora"
+            return False, "Fallo al confirmar fecha y hora fueron seteados correctamente"
         return True, ""
     except subprocess.CalledProcessError as e:
         #  print(f"Error setting system time: {e}")
