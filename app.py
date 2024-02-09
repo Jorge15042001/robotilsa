@@ -1,27 +1,16 @@
 #  from util import *
 
 from flask import Flask, request, jsonify
-from datetime import datetime, timedelta
-import syslog
-import subprocess
-
-import uuid
-import hashlib
-from functools import wraps
-import jwt
-import daemon
 
 from flasgger import Swagger
 from flasgger import swag_from
+import datetime
 
+from utils import set_system_time
 
-#  from flasgger import Swagger,swag_from
-
-from dotenv import dotenv_values
 
 app = Flask(__name__)
 swagger = Swagger(app)
-#  app.config['SECRET_KEY'] = str(uuid.uuid4())
 
 
 @swag_from("./documentation/sensing_interval.yaml")
@@ -36,9 +25,11 @@ def update_sensing_interval():
 @swag_from("./documentation/get_date.yaml")
 @app.route("/system/date", methods=['GET'])
 def get_system_date():
+    timestamp = datetime.datetime.now().timestamp()
+    print(timestamp)
     return {
         "success": True,
-        "value": "",
+        "current_timestamp": int(timestamp),
         "str_err": ""
     }
 
@@ -46,10 +37,18 @@ def get_system_date():
 @swag_from("./documentation/set_date.yaml")
 @app.route("/system/sync_date", methods=['POST'])
 def set_system_date():
+    payload = request.get_json()
+    target_timestamp = payload["current_timestamp"]
+    if type(target_timestamp) is not int:
+        return {
+            "success": False,
+            "str_err": "Timestamp en formato incorrecto"
+        }
+    sucess, str_err = set_system_time(target_timestamp)
+
     return {
-        "success": True,
-        "value": "",
-        "str_err": ""
+        "success": sucess,
+        "str_err": str_err
     }
 
 

@@ -5,13 +5,7 @@ name = "pypi"
 
 [packages]
 flask = "*"
-python-dotenv = "*"
 flasgger = "*"
-pwinput = "*"
-pyjwt = "*"
-requests = "*"
-python-daemon = "*"
-psutil = "*"
 
 [dev-packages]
 pylint = "*"
