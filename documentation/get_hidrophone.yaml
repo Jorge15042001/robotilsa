@@ -1,0 +1,76 @@
+summary: "Endpoint para obtener actividad"
+description: "Retorna los resultados del último análisis que realizó el hidrófono seleccionado"
+
+produces:
+- "application/json"
+
+definitions:
+  HidrophoneData:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 16
+      results:
+        type: object
+        properties:
+          increase_activity:
+            type: number
+            example: 30
+          last_activity:
+            type: number
+            exmaple: 25.2
+          source_of_sounds:
+            type: array 
+            items:
+              $ref: '#/definitions/SoundSource'
+  SoundSource:
+    type: object
+    properties:
+      name:
+        type: string
+        enum: ["Machine", "Shrimp", "Aerators"]
+      percent:
+        type: number
+        example: 2
+
+
+parameters:
+  - name: hidrophone_id
+    in: path
+    type: string
+    required: true
+    description: id del hidrófono que se quiere consultar
+
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: true
+        str_err:
+          type: "string"
+          example: 
+        hidrophone:
+          $ref: '#/definitions/HidrophoneData'
+
+  400:
+    description: "Failure"
+    schema:
+      type: "object"
+      properties:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: false 
+        str_err:
+          type: "string"
+          example: Hidrofono no existe
+        hidrophone:
+          type: "object"
+          nullable: true
+

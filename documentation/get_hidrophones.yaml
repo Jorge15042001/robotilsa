@@ -1,0 +1,54 @@
+summary: "Endpoint para obtener hidrófobos"
+description: "Retorna la lista de hidrófobos instalados"
+
+produces:
+- "application/json"
+
+definitions:
+  Hidrophone:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+        example: true
+      id:
+        type: integer
+        example: 16
+      name:
+        type: string
+        example: hidrofono 2
+
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: true
+        str_err:
+          type: "string"
+          example: 
+        hidrophones:
+          type: "array"
+          items: 
+            $ref: '#/definitions/Hidrophone'
+
+  400:
+    description: "Failure"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: false
+        str_err:
+          type: "string"
+          example: "No se pudo obtener la lista de hidrófobos"
+        hidrophones:
+          type: "array"
+          items: 
+            $ref: '#/definitions/Hidrophone'
+          example: []
+

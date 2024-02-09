@@ -1,0 +1,37 @@
+summary: "Endpoint para obtner fecha"
+description: "Retorna la fecha actual del sistema en formato unixtimestamp"
+
+produces:
+- "application/json"
+
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: true
+        str_err:
+          type: "string"
+          example: 
+        current_timestamp:
+          type: "integer"
+          example: 1707456814
+
+  400:
+    description: "Failure"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: false
+        str_err:
+          type: "string"
+          example: "No se pudo consultar el timestamp actual"
+        current_timestamp:
+          type: "integer"
+          example: 0 
+

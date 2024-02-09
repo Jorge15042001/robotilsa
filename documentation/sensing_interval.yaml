@@ -1,0 +1,44 @@
+summary: "Ajusar el intervalo de muestreo"
+description: "Permite ajustar el intervalo de muestreo a uno de los siguientes valores: [2min, 5 min (defecto), 10min, 15 min, 30 min]. El intervalo seleccionado debe ser un entero expresado en jsegundos."
+consumes:
+- "application/json"
+
+produces:
+- "application/json"
+
+
+parameters:
+- in: "body"
+  name: "body"
+  description: "json object containing "
+  required: "true"
+  schema:
+    type: "object"
+    properties:
+      sensing_interval:
+        type: "integer"
+        enum: [120, 300, 600, 900, 1800 ]
+        default: 300
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        str_err:
+          type: string
+          example: 
+  400:
+    description: "Failure"
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false 
+        str_err:
+          type: string
+          example: El intervalo de muestreo no esta permitido 

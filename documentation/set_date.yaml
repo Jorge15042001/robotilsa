@@ -1,0 +1,44 @@
+summary: "Sincronizar la fecha y hora"
+description: "Permite sincronizar la fecha y hora del sistema, recive un timestamp en formato unix timestamp (número de segundos de 1970)"
+consumes:
+- "application/json"
+
+produces:
+- "application/json"
+
+
+parameters:
+- in: "body"
+  name: "body"
+  description: "json object containing "
+  required: "true"
+  schema:
+    type: "object"
+    properties:
+      current_timestamp:
+        type: integer 
+        example: 1707457355 
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        str_err:
+          type: string
+          example: 
+  400:
+    description: "Failure"
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false 
+        str_err:
+          type: string
+          enum: ["Timestamp en formato incorrecto", "Timestamp deber ser diferente de 0", "Fecha enviada menor a la fecha del dispositivo"]
+          example: Timestamp en formato incorrecto
