@@ -20,6 +20,7 @@ def set_system_time(unix_timestamp):
         print("System time set successfully.")
 
         # Recheck and print the current system time
+        time.sleep(2)
         current_time = datetime.now()
         print("Current system time:", current_time.strftime("%Y-%m-%d %H:%M:%S"))
 
