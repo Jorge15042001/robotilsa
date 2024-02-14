@@ -11,6 +11,8 @@ from dotenv import dotenv_values
 
 config = dotenv_values(".env")
 JSON_DEVICES_FILE = config["JSON_DEVICES_FILE"]
+VALID_SENSING_INTERVALS = [
+    int(interval) for interval in config["VALID_SENSING_INTERVALS"].split(",")]
 
 
 app = Flask(__name__)
@@ -26,6 +28,26 @@ def response_setup(response):
 @swag_from("./documentation/sensing_interval.yaml")
 @app.route("/system/processor", methods=['POST'])
 def update_sensing_interval():
+    payload = request.get_json()
+    if "sensing_interval" not in payload:
+        return response_setup({
+            "success": False,
+            "str_err": "key 'sensing_interval' no esta presente en payload del request"
+        })
+
+    if type(payload["sensing_interval"]) is not int:
+        return response_setup({
+            "success": False,
+            "str_err": "key 'sensing_interval' debe ser entereo"
+        })
+
+    interval = int(payload["sensing_interval"])
+    if interval not in VALID_SENSING_INTERVALS:
+        return response_setup({
+            "success": False,
+            "str_err": "El intervalo de muestreo no es permitido"
+        })
+
     return response_setup({
         "success": False,
         "str_err": "Not implemented"
