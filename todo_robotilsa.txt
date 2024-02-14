@@ -1,0 +1,78 @@
+API-Rest protocolo http json
+
+curva de alimentacion 24 horas, alimentar cada 5 minutos
+minimo de 2 minuto - 30 minutos
+cada 5 minutos lanza un cebo de x gramos = 50 gramos para todos los alimentadores 
+aproximadamente 1 minuto - registrar audio - 60 segundos -> procesamiento de senales + ML = fuentes de sonido y actividad
+alimentacion
+alimento de referencia: 100 kg
+alimento maximo: 150 kg
+8 am a 9 am: X kg
+lanzamiento en gr del alimentador
+
+API
+- Endpoint para ajustar intervalo de muestreo 
+POST: /system/processor body: {sensing_interval: segundos }
+
+200: { status: true}
+400:{ status: false, str_err: "El intervalo de muestreo no es permitido"}
+
+- Endpoint para obtener la fecha
+GET: /system/date response: { current_timestamp: 113312321132 (segundos) }
+
+- Endpoint para sincronizar las fechas
+POST: /system/sync_date body: { current_timestamp: 113312321132 (segundos) }
+Establecer la fecha y hora del dispositivo
+200: { status: true}
+400: { status: false, str_err: "Timestamp en formato incorrecto"}
+400: { status: false, str_err: "Timestamp debe ser diferente de cero"}
+400: { status: false, str_err: "Fecha enviada es menor a la fecha del dispositivo"}
+
+- Endpoint para obtener hidrofonos
+GET: /controller/hydrophone/all
+Retornar hidrofonos instalados
+200: {
+	hydrophones : [{
+			"enabled": true,
+			"id": 15,
+			"name" : "hidrofono 1"
+	},
+	{
+			"enabled": true,
+			"id": 16,
+			"name" : "hidrofono 2"
+	}
+	]
+}
+
+
+- Endpoint para obtener actividad
+GET: /controller/hydrophone?id=15
+Retornar resultados de ultimo analisis que realizo <%fuentes de sonido, actividad, fecha >
+200: {
+   id: 15,
+   results : {
+   	increase_activity: 30%,
+        last_activity: 25.5,
+   	source_of_sounds : [{
+   		name: "machine",
+   		percent: 19%
+   	},
+   	{
+   		name: "shrimp",
+   		percent: 80%
+   	},
+   	{
+   		name: "aerators",
+   		percent: 1%
+   	}
+   	]
+   }
+}
+
+Subsistema de procesamiento
+- Ajustar los intervalos de muestreo a una lista predefinida: 2min, 5 min (defecto), 10min, 15 min y 30 min
+- Al finalizar el resultado del procesamiento escribir en un archivo json (buffer circular 10 elementos)
+- Al finalizar escribir el resultado de la generacion de alarmas en un archivo json (bufer circular 10 elementos)
+
+
