@@ -1,12 +1,16 @@
 #  from util import *
 
+
+from utils import set_system_time, read_json, format_hydrophones
 from flask import Flask, request, jsonify, make_response
 
 from flasgger import Swagger
 from flasgger import swag_from
 import datetime
+from dotenv import dotenv_values
 
-from utils import set_system_time
+config = dotenv_values(".env")
+JSON_DEVICES_FILE = config["JSON_DEVICES_FILE"]
 
 
 app = Flask(__name__)
@@ -60,9 +64,28 @@ def set_system_date():
 @swag_from("./documentation/get_hidrophones.yaml")
 @app.route("/controller/hydrophone/all", methods=['GET'])
 def get_hydrophones():
+
+    success, devices = read_json(JSON_DEVICES_FILE)
+    if not success:
+        return response_setup({
+            "success": False,
+            "hydrophones": [],
+            "str_err": "No se pudo abrir archivo de dispositivos JSON"
+        })
+    if "hydrophones" not in devices or len(devices["hydrophones"]) == 0:
+        return response_setup({
+            "success": False,
+            "hydrophones": [],
+            "str_err": "No hay hidrófonos en el archvio de dispositivos JSON"
+        })
+
+    hydrophones = devices["hydrophones"]
+    hydrophones_formatted = format_hydrophones(hydrophones)
+
     return response_setup({
-        "success": False,
-        "str_err": "Not implemented"
+        "success": True,
+        "hydrophones": hydrophones_formatted,
+        "str_err": ""
     })
 
 

@@ -1,3 +1,5 @@
+import syslog
+import json as js
 import time
 import subprocess
 from datetime import datetime
@@ -33,3 +35,50 @@ def set_system_time(unix_timestamp):
     except subprocess.CalledProcessError as e:
         #  print(f"Error setting system time: {e}")
         return False, "Fallo al conigurar fecha y hora"
+
+
+def find_device_index(devices, device_id):
+    for i, d in enumerate(devices):
+        if d["id"] == device_id:
+            return i
+    raise Exception("device not found")
+
+
+def find_key_index(params, key):
+    for i, p in enumerate(params):
+        if p["name"] == key:
+            return i
+    raise Exception("paramter not found")
+
+
+def read_json(PATH: str) -> (bool, dict):
+    try:
+        json_file = open(PATH)
+        json_data = js.load(json_file)
+        json_file.close()
+        return True, json_data
+    except Exception as e:
+        # TODO: setup syslog
+        syslog.syslog(syslog.LOG_ERR, str(e))
+        return False, dict()
+
+
+def write_json(data: dict, PATH: str):
+    try:
+        json_file = open(PATH, "w+")
+        js_string = js.dumps(data, indent=4, separators=(',', ': '))
+        json_file.write(js_string)
+        json_file.close()
+    except Exception as e:
+        syslog.syslog(syslog.LOG_ERR, str(e))
+        raise Exception("Failed to write json file: %s" % PATH)
+
+
+def format_hydrophones(hydrophones):
+    return [
+        {
+            "id": hydrophone["id"],
+            "name": hydrophone["name"],
+            "enabled": hydrophone["enabled"]
+        }
+        for hydrophone in hydrophones]
