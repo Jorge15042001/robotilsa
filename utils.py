@@ -1,8 +1,13 @@
 import syslog
+import time
 import json as js
 import time
+import threading
+import os
 import subprocess
+from functools import wraps
 from datetime import datetime
+from flask import request, jsonify, make_response
 
 
 def set_system_time(unix_timestamp):
@@ -20,36 +25,67 @@ def set_system_time(unix_timestamp):
         # Execute the date command to set the system time
         subprocess.run(["sudo", "date", "-s", time_string], check=True)
         print("System time set successfully.")
-
-        # Recheck and print the current system time
-        #  time.sleep(2)
-        #  current_time = datetime.now()
-        #  print("Current system time:", current_time.strftime("%Y-%m-%d %H:%M:%S"))
-        #
-        #  # Check if the rechecked time is within a tolerance of a few seconds
-        #  time_difference = abs(current_time.timestamp() - unix_timestamp)
-        #  tolerance = 5  # Adjust this tolerance as needed
-        #  if time_difference <= tolerance:
-        #      return False, "Fallo al confirmar fecha y hora fueron seteados correctamente"
         return True, ""
+
     except subprocess.CalledProcessError as e:
         #  print(f"Error setting system time: {e}")
         return False, "Fallo al conigurar fecha y hora"
 
 
+def find_index_in_object_array(object_array, key, key_value):
+    for i, obj in enumerate(object_array):
+        if obj[key] == key_value:
+            return True, i
+    return False, -1
+
+
 def find_subsystem_index(subsystems, subsystem_name):
-    for i, subsystem in enumerate(subsystems):
-        if subsystem["name"] == subsystem_name:
-            return i
-    raise Exception("device not found")
+    return find_index_in_object_array(subsystems, "name", subsystem_name)
 
 
-def validate_key(dictionary: dict, key, key_type):
-    if key not in dictionary:
-        return False, f"clave {key} no encuentrada"
-    if type(dictionary[key]) is not key_type:
-        return False, f"clave {key} no es {key_type}"
-    return True, ""
+def find_param_index(params, param_name):
+    return find_index_in_object_array(params, "name", param_name)
+
+
+def build_response(success: bool, str_err: str = "", extra_fields: dict = dict()):
+    response = dict()
+    for key in extra_fields:
+        response[key] = extra_fields[key]
+    response["success"] = success
+    response["str_err"] = str_err
+
+    if response["success"]:
+        return make_response(response, 200)
+    return make_response(response, 400)
+
+
+def validate_dict(type_lut: dict[str, type], _dict) -> (bool, str):
+    for key in type_lut:
+        if key not in _dict:
+            return (False, f"json no contiene clasve {key}")
+        if type(_dict[key]) is not type_lut[key]:
+            return (
+                False,
+                f"clasve {key} debe ser {type_lut[key].__name__}"
+            )
+    return (True, "")
+
+
+def validate_json_payload(type_lut: dict[str, type]):
+    def decorator(func):
+        @ wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                json_data = request.get_json()
+                success, str_err = validate_dict(type_lut, json_data)
+                if not success:
+                    return build_response(False, str_err)
+                return func(*args, **kwargs)
+            except Exception as e:
+                # TODO: log
+                return build_response(False, "Error desconocido")
+        return wrapper
+    return decorator
 
 
 def find_key_index(params, key):
@@ -90,3 +126,14 @@ def format_hydrophones(hydrophones):
             "enabled": hydrophone["enabled"]
         }
         for hydrophone in hydrophones]
+
+
+def hardrestart_system(delay: int = 0, wait: bool = False):
+    def reboot():
+        time.sleep(delay)
+        os.system("reboot")
+
+    restart_thread = threading.Thread(target=reboot).start
+
+    if wait:
+        restart_thread.join()
