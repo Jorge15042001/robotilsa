@@ -1,7 +1,7 @@
 #  from util import *
 
 
-from utils import set_system_time, read_json, format_hydrophones
+from utils import find_subsystem_index, set_system_time, read_json, format_hydrophones, validate_key
 from flask import Flask, request, jsonify, make_response
 
 from flasgger import Swagger
@@ -10,9 +10,20 @@ import datetime
 from dotenv import dotenv_values
 
 config = dotenv_values(".env")
-JSON_DEVICES_FILE = config["JSON_DEVICES_FILE"]
-VALID_SENSING_INTERVALS = [
-    int(interval) for interval in config["VALID_SENSING_INTERVALS"].split(",")]
+if "JSON_DEVICES_FILE" not in config:
+    raise RuntimeError("Missing 'JSON_DEVICES_FILE' in .env file")
+
+JSON_DEVICES_FILE: str = str(config["JSON_DEVICES_FILE"])
+
+if "JSON_SYS_FILE" not in config:
+    raise RuntimeError("Missing 'JSON_SYS_FILE' in .env file")
+JSON_SYS_FILE = str(config["JSON_DEVICES_FILE"])
+
+if "VALID_SENSING_INTERVALS" not in config:
+    raise RuntimeError("Missing 'VALID_SENSING_INTERVALS' in .env file")
+VALID_SENSING_INTERVALS: list[int] = [int(interval) for interval in
+                                      str(config["VALID_SENSING_INTERVALS"])
+                                      .split(",")]
 
 
 app = Flask(__name__)
@@ -23,6 +34,24 @@ def response_setup(response):
     if response["success"]:
         return make_response(response, 200)
     return make_response(response, 400)
+
+
+@swag_from("./documentation/update_system.yaml")
+@app.route("/system/update", methods=['POST'])
+def update_system():
+    payload = request.get_json()
+
+    validate_key(payload, "subsystem", str)
+    validate_key(payload, "param_name", str)
+    validate_key(payload, "param_value", str)
+
+    subsystem: str = payload["subsystem"]
+    param_name: str = payload["param_name"]
+    param_value: str = payload["param_value"]
+    return response_setup({
+        "success": False,
+        "str_err": "Not implemented"
+    })
 
 
 @swag_from("./documentation/sensing_interval.yaml")
@@ -47,6 +76,9 @@ def update_sensing_interval():
             "success": False,
             "str_err": "El intervalo de muestreo no es permitido"
         })
+    sys_json: dict = read_json(JSON_SYS_FILE)
+    subsystem_idx = find_subsystem_index(sys_json["subsystems"], "processor")
+    sys_json[]
 
     return response_setup({
         "success": False,
@@ -118,9 +150,6 @@ def get_hydrophone(id):
         "success": False,
         "str_err": "Not implemented"
     })
-
-
-#  @swag_from("./documentation/sensors.getall.yaml")
 
 
 if __name__ == "__main__":

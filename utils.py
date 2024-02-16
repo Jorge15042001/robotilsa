@@ -37,11 +37,19 @@ def set_system_time(unix_timestamp):
         return False, "Fallo al conigurar fecha y hora"
 
 
-def find_device_index(devices, device_id):
-    for i, d in enumerate(devices):
-        if d["id"] == device_id:
+def find_subsystem_index(subsystems, subsystem_name):
+    for i, subsystem in enumerate(subsystems):
+        if subsystem["name"] == subsystem_name:
             return i
     raise Exception("device not found")
+
+
+def validate_key(dictionary: dict, key, key_type):
+    if key not in dictionary:
+        return False, f"clave {key} no encuentrada"
+    if type(dictionary[key]) is not key_type:
+        return False, f"clave {key} no es {key_type}"
+    return True, ""
 
 
 def find_key_index(params, key):

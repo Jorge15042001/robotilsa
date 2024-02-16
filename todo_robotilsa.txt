@@ -11,6 +11,10 @@ alimento maximo: 150 kg
 lanzamiento en gr del alimentador
 
 API
+- Endpoint para reinicia todo (soft reset)
+
+- Endpoint para reinicia el dispositivo(hard reset)
+
 - Endpoint para ajustar intervalo de muestreo 
 POST: /system/processor body: {sensing_interval: segundos }
 
