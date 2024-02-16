@@ -5,7 +5,7 @@ produces:
 - "application/json"
 
 definitions:
-  HidrophoneData:
+  HydrophoneData:
     type: object
     properties:
       id:
@@ -29,7 +29,8 @@ definitions:
     properties:
       name:
         type: string
-        enum: ["Machine", "Shrimp", "Aerators"]
+        enum: [ "BACKGROUND", "SHRIMP_EATING", "SHRIMP_AERATION", "SHRIMP_BUGS", "SHRIMP_LOW_DENSITY", "FEEDER_MACHINE", "AERATION", "AERATION_TOO_NEAR", "BUGS", "ERROR_HUMAN_ACTIVITY", "ERROR", "ERROR_HIGH_NOISE", "ERROR_LOW_NOISE"] 
+
       percent:
         type: number
         example: 2
@@ -55,13 +56,11 @@ responses:
           type: "string"
           example: 
         hidrophone:
-          $ref: '#/definitions/HidrophoneData'
+          $ref: '#/definitions/HydrophoneData'
 
   400:
     description: "Failure"
     schema:
-      type: "object"
-      properties:
       type: "object"
       properties:
         success:
