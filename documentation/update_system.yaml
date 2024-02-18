@@ -1,0 +1,50 @@
+summary: "Modificar parametro de subsistema"
+description: "Permite modificar parametros de un subsistema y soft-reset el subsistema luego del cambio"
+
+consumes:
+- "application/json"
+
+produces:
+- "application/json"
+
+parameters:
+- in: "body"
+  name: "body"
+  description: "json object containing "
+  required: "true"
+  schema:
+    type: "object"
+    properties:
+      subsystem:
+        type: "string"
+        enum: ["monitor", "control", "actuador", "communication", "Alimentador", "processor"]
+        example: "processor"
+      param_name:
+        type: "string"
+        example: "sensing_interval"
+      param_value:
+        type: "string"
+        example: "1800"
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        str_err:
+          type: string
+          example: 
+  400:
+    description: "Failure"
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false 
+        str_err:
+          type: string
+          example: Subsistema no existe 

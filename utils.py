@@ -1,13 +1,23 @@
 import syslog
 import time
 import json as js
+
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, fields
+import api_data_models as api_models
+
+
 import time
+from sys import argv
 import threading
 import os
+from dotenv import dotenv_values
 import subprocess
 from functools import wraps
 from datetime import datetime
 from flask import request, jsonify, make_response
+from dataclasses import dataclass
+from typing import Callable
 
 
 def set_system_time(unix_timestamp):
@@ -47,16 +57,21 @@ def find_param_index(params, param_name):
     return find_index_in_object_array(params, "name", param_name)
 
 
-def build_response(success: bool, str_err: str = "", extra_fields: dict = dict()):
-    response = dict()
-    for key in extra_fields:
-        response[key] = extra_fields[key]
-    response["success"] = success
-    response["str_err"] = str_err
+def build_response(res_object: api_models.BaseApiResponse):
+    http_response_code: int = 200 if res_object.success else 400
+    return make_response(res_object.as_dict(), http_response_code)
 
-    if response["success"]:
-        return make_response(response, 200)
-    return make_response(response, 400)
+
+#  def build_response(success: bool, str_err: str = "", extra_fields: dict = dict()):
+#      response = dict()
+#      for key in extra_fields:
+#          response[key] = extra_fields[key]
+#      response["success"] = success
+#      response["str_err"] = str_err
+#
+#      if response["success"]:
+#          return make_response(response, 200)
+#      return make_response(response, 400)
 
 
 def validate_dict(type_lut: dict[str, type], _dict) -> (bool, str):
@@ -71,21 +86,59 @@ def validate_dict(type_lut: dict[str, type], _dict) -> (bool, str):
     return (True, "")
 
 
-def validate_json_payload(type_lut: dict[str, type]):
+def get_payload_as_parameter(model: api_models.BaseApiModel):
     def decorator(func):
         @ wraps(func)
         def wrapper(*args, **kwargs):
             try:
                 json_data = request.get_json()
-                success, str_err = validate_dict(type_lut, json_data)
-                if not success:
-                    return build_response(False, str_err)
+                model_data = model(**json_data)
+                args = args + (model_data,)
                 return func(*args, **kwargs)
             except Exception as e:
                 # TODO: log
+                print(e)
+
                 return build_response(False, "Error desconocido")
         return wrapper
     return decorator
+
+
+def validate_json_payload(model: api_models.BaseApiModel, response_model: api_models.BaseApiResponse = api_models.BaseApiResponse):
+    def decorator(func):
+        @ wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                json_data = request.get_json()
+                success, str_err = model.validate_dict(json_data)
+                response = response_model(success, str_err)
+                if not success:
+                    return build_response(response)
+                return func(*args, **kwargs)
+            except Exception as e:
+                # TODO: log
+                print(e)
+                return build_response(False, "Error desconocido")
+        return wrapper
+    return decorator
+
+
+#  def validate_json_payload(type_lut: dict[str, type]):
+#      def decorator(func):
+#          @ wraps(func)
+#          def wrapper(*args, **kwargs):
+#              try:
+#                  json_data = request.get_json()
+#                  success, str_err = validate_dict(type_lut, json_data)
+#                  if not success:
+#                      return build_response(False, str_err)
+#                  return func(*args, **kwargs)
+#              except Exception as e:
+#                  # TODO: log
+#                  print(e)
+#                  return build_response(False, "Error desconocido")
+#          return wrapper
+#      return decorator
 
 
 def find_key_index(params, key):
@@ -107,15 +160,16 @@ def read_json(PATH: str) -> (bool, dict):
         return False, dict()
 
 
-def write_json(data: dict, PATH: str):
+def write_json(data: dict, PATH: str) -> (bool, str):
     try:
         json_file = open(PATH, "w+")
         js_string = js.dumps(data, indent=4, separators=(',', ': '))
         json_file.write(js_string)
         json_file.close()
+        return True, ""
     except Exception as e:
         syslog.syslog(syslog.LOG_ERR, str(e))
-        raise Exception("Failed to write json file: %s" % PATH)
+        return False, "Fallo al escribir json"
 
 
 def format_hydrophones(hydrophones):
@@ -137,3 +191,59 @@ def hardrestart_system(delay: int = 0, wait: bool = False):
 
     if wait:
         restart_thread.join()
+
+
+def get_member_types(data_class):
+    return {field: field_type for field, field_type in data_class.__annotations__.items()}
+
+
+def confg_file_path() -> str:
+    return argv[1] if len(argv) == 2 else ".env"
+
+
+def getConfig() -> api_models.API_CONFIG:
+
+    config_file = confg_file_path()
+    config: dict = dotenv_values(config_file)
+
+    valid_config, config_error = api_models.API_CONFIG_INTITIAL.validate_dict(
+        config)
+    if not valid_config:
+        raise RuntimeError(config_error)
+
+    config: api_models.API_CONFIG_INTITIAL = api_models.API_CONFIG_INTITIAL(
+        **config)
+
+    json_devices_file: str = config.JSON_DEVICES_FILE
+    json_sys_file = config.JSON_SYS_FILE
+    valid_sensing_intervals: list[int] = [int(interval) for interval in
+                                          config.VALID_SENSING_INTERVALS
+                                          .split(",")]
+    api_port = int(config.API_PORT)
+    pid_subsystem_file_format = config.PID_SUBSYSTEM_FILE_FORMAT
+
+    def pid_path_formatter(subsystem):
+        return pid_subsystem_file_format + subsystem
+
+    def parse_bool(bool_str: str) -> bool:
+        if (bool_str == "true" or bool_str == "1"):
+            return True
+        if (bool_str == "false" or bool_str == "0"):
+            return False
+        return False
+    debug = parse_bool(config.DEBUG)
+    hide_internal = parse_bool(config.HIDE_INTERNAL_METHODS)
+
+    return api_models.API_CONFIG(json_devices_file,
+                                 json_sys_file,
+                                 valid_sensing_intervals,
+                                 api_port,
+                                 pid_path_formatter,
+                                 debug,
+                                 hide_internal
+                                 )
+
+
+def get_payload_as(model: api_models.BaseApiModel):
+    json_data = request.get_json()
+    return model(**json_data)

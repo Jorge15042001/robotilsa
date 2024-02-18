@@ -1,0 +1,48 @@
+summary: "Reinicia un subsistema"
+description: "Envia señal de reinicio al sistema seleccionado"
+
+consumes:
+- "application/json"
+
+produces:
+- "application/json"
+
+parameters:
+- in: "body"
+  name: "body"
+  description: "json object containing"
+  required: "true"
+  schema:
+    type: "object"
+    properties:
+      subsystem:
+        type: "string"
+        enum: ["monitor", "control", "actuador", "communication", "Alimentador", "processor"]
+        example: "processor"
+
+
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: true
+        str_err:
+          type: "string"
+          example: 
+
+  400:
+    description: "Failure"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: false
+        str_err:
+          type: "string"
+          example: "Fallo al reiniciar el subsistema"
+
