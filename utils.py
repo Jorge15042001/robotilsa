@@ -232,7 +232,6 @@ def getConfig() -> api_models.API_CONFIG:
             return False
         return False
     debug = parse_bool(config.DEBUG)
-    hide_internal = parse_bool(config.HIDE_INTERNAL_METHODS)
 
     return api_models.API_CONFIG(json_devices_file,
                                  json_sys_file,
@@ -240,7 +239,6 @@ def getConfig() -> api_models.API_CONFIG:
                                  api_port,
                                  pid_path_formatter,
                                  debug,
-                                 hide_internal
                                  )
 
 

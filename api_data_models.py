@@ -46,7 +46,6 @@ class API_CONFIG(BaseApiModel):
     API_PORT: int
     DEBUG: bool
     PID_SUBSYSTEM_FILE: Callable[[str], str]
-    HIDE_INTERNAL_METHODS: bool
 
 
 @dataclass
@@ -57,7 +56,6 @@ class API_CONFIG_INTITIAL(BaseApiModel):
     DEBUG: str
     API_PORT: str
     PID_SUBSYSTEM_FILE_FORMAT: str
-    HIDE_INTERNAL_METHODS: str
 
 
 @dataclass

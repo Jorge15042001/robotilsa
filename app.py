@@ -20,7 +20,7 @@ swagger = Swagger(app)
 
 
 # TODO: documentaion
-@swag_from("./documentation/update_system.yaml", exclude=api_config.HIDE_INTERNAL_METHODS)
+@swag_from("./documentation/update_system.yaml")
 @app.route("/system/update", methods=['POST'])
 @validate_json_payload(api_models.UpdateSystemPayload,
                        api_models.UpdateSystemResponse)
