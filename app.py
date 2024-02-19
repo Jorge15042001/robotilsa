@@ -19,7 +19,6 @@ app = Flask(__name__)
 swagger = Swagger(app)
 
 
-# TODO: documentaion
 @swag_from("./documentation/update_system.yaml")
 @app.route("/system/update", methods=['POST'])
 @validate_json_payload(api_models.UpdateSystemPayload,
@@ -106,10 +105,8 @@ def set_system_date(payload: api_models.SetDatePayload):
 
     return build_response(api_models.SetDateResponse(success, str_err))
 
-# Todo: fix typo 'hidrophones'
 
-
-@swag_from("./documentation/get_hidrophones.yaml")
+@swag_from("./documentation/get_hydrophones.yaml")
 @app.route("/controller/hydrophone/all", methods=['GET'])
 def get_hydrophones():
 
@@ -129,8 +126,7 @@ def get_hydrophones():
     )
 
 
-# TODO: documentaion
-@swag_from("./documentation/get_hidrophone.yaml")
+@swag_from("./documentation/get_hydrophone.yaml")
 @app.route("/controller/hydrophone", methods=['GET'])
 @validate_json_payload(api_models.GetHydrophoneDataPayload,
                        api_models.GetHydrophoneDataResponse)
