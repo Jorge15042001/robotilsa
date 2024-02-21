@@ -47,6 +47,7 @@ class API_CONFIG(BaseApiModel):
     DEBUG: bool
     PID_SUBSYSTEM_FILE: Callable[[str], str]
     RESTART_SIGNAL_NUMBER: int
+    ALARMS_FILE: str
 
 
 @dataclass
@@ -58,6 +59,7 @@ class API_CONFIG_INTITIAL(BaseApiModel):
     API_PORT: str
     PID_SUBSYSTEM_FILE_FORMAT: str
     RESTART_SIGNAL_NUMBER: str
+    ALARMS_FILE: str
 
 
 @dataclass
@@ -171,3 +173,13 @@ class HardRestartPayload(BaseApiPayload):
 @dataclass
 class HardRestartResponse(BaseApiResponse):
     pass
+
+
+@dataclass
+class GetAlarmsPayload(BaseApiPayload):
+    pass
+
+
+@dataclass
+class GetAlarmsResponse(BaseApiResponse):
+    alarms: list[object] = None

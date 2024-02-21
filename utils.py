@@ -148,7 +148,7 @@ def find_key_index(params, key):
     raise Exception("paramter not found")
 
 
-def ead_json(PATH: str) -> (bool, dict):
+def read_json(PATH: str) -> (bool, dict):
     try:
         json_file = open(PATH)
         json_data = js.load(json_file)
@@ -251,7 +251,8 @@ def getConfig() -> api_models.API_CONFIG:
                                  api_port,
                                  pid_path_formatter,
                                  debug,
-                                 int(config.RESTART_SIGNAL_NUMBER)
+                                 int(config.RESTART_SIGNAL_NUMBER),
+                                 config.ALARMS_FILE
                                  )
 
 
@@ -274,3 +275,39 @@ def send_signal(pid: int, signal_number: int) -> (bool):
     except OSError as e:
         print(f"Error: {e}")
     return False
+
+
+def parse_date_to_timestamp(date_string: str) -> (bool, float):
+    try:
+        # Parse the date string
+        parsed_date = datetime.strptime(date_string, "%Y_%m_%d__%H:%M:%S.%f")
+
+        # Convert the parsed date to a Unix timestamp
+        timestamp = parsed_date.timestamp()
+
+        return True, timestamp
+
+    except ValueError as e:
+        print(f"Error: {e}")
+        return False, 0
+
+
+def read_alarms(alarms_path) -> (bool, list[dict]):
+    try:
+        alarms_file = open(alarms_path)
+        lines = alarms_file.readlines()
+        lines = [line.strip() for line in lines]
+        splitted_lines = [line.split(';') for line in lines]
+        parsed_lines = [(parse_date_to_timestamp(date_str),  js.loads(json_str))
+                        for date_str, json_str in splitted_lines]
+
+        def add_timestamp_json(json_obj, timestamp):
+            json_obj["timestamp"] = timestamp
+            return json_obj
+        alarms_formatted = [add_timestamp_json(json_alarm, timestamp)
+                            for timestamp, json_alarm in parsed_lines]
+        return True, alarms_formatted
+    except Exception as e:
+        # todo: log
+        print(e)
+        return False, []

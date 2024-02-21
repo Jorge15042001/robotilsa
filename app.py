@@ -1,4 +1,4 @@
-from utils import find_subsystem_index, set_system_time, read_json, format_hydrophones, build_response, validate_json_payload,  validate_dict, find_param_index, write_json, hardrestart_system,  getConfig, get_payload_as, get_payload_as_parameter, build_response, read_pid, send_signal
+from utils import find_subsystem_index, set_system_time, read_json, format_hydrophones, build_response, validate_json_payload,  validate_dict, find_param_index, write_json, hardrestart_system,  getConfig, get_payload_as, get_payload_as_parameter, build_response, read_pid, send_signal, parse_date_to_timestamp, read_alarms
 #  from utils import *
 import subprocess
 from flask import Flask, request
@@ -195,6 +195,19 @@ def soft_restart(payload: api_models.SofRestartPayload):
 def hard_restart():
     hardrestart_system(5)
     return build_response(api_models.HardRestartResponse.buildFailure("Not implemented"))
+
+
+@swag_from("./documentation/get_alarms.yaml")
+@app.route("/system/get_alamars", methods=['GET'])
+def get_alarms():
+    alarms_read, alarms = read_alarms(api_config.ALARMS_FILE)
+    if not alarms_read:
+        respnse = api_models.GetAlarmsResponse.buildFailure(
+            "No se pudo leer alarmas")
+        return build_response(respnse)
+
+    response = api_models.GetAlarmsResponse.buildSuccess(alarms)
+    return build_response(response)
 
 
 if __name__ == "__main__":

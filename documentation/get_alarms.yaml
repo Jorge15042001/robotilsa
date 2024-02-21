@@ -1,0 +1,60 @@
+summary: "Endpoint para obtner alarmas"
+description: "Retorna lista con las ultimas 20 alarmas generadas"
+
+produces:
+- "application/json"
+
+definitions:
+  Alarm:
+    type: object
+    properties:
+      timestamp:
+        type: integer
+        example: 1707456814
+      alarm_code:
+        type: integer
+        example: 603
+      emited:
+        type: integer
+        example: 2
+      id_devide:
+        type: integer
+        example: 16
+      message:
+        type: string
+        example: Recordings has registered stranger audios!
+      type:
+        type: integer
+        exmaple: 1
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: true
+        str_err:
+          type: "string"
+          example: 
+        alarms:
+          type: "array"
+          items: 
+            $ref: '#/definitions/Alarm'
+
+  400:
+    description: "Failure"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: false
+        str_err:
+          type: "string"
+          example: "No se puedo obtener alarmas"
+        current_timestamp:
+          type: "integer"
+          example: 0 
+
