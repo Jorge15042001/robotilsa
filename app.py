@@ -9,10 +9,10 @@ from flasgger import swag_from
 import datetime
 import requests
 
-api_config: api_models.API_CONFIG = getConfig()
+api_config = getConfig()
 
 # TODO: don't use this variable maybe put it in the .env file
-API_URL = f"http://127.0.0.1:{api_config.API_PORT}"
+API_URL = "http://127.0.0.1:"+api_config.API_PORT
 
 
 app = Flask(__name__)
@@ -28,7 +28,7 @@ def update_system(payload: api_models.UpdateSystemPayload):
 
     _, sys_json = read_json(api_config.JSON_SYS_FILE)
     #  print(sys_json)
-    subsystems: dict = sys_json["subsytems"]
+    subsystems = sys_json["subsytems"]
 
     subsystem_found, subsystem_idx = find_subsystem_index(
         subsystems, payload.subsystem)
@@ -43,7 +43,8 @@ def update_system(payload: api_models.UpdateSystemPayload):
         subsystem_params, payload.param_name)
 
     if not subsystem_found:
-        str_err = f"Subsistema {payload.subsystem} no contiene parametro {payload.param_name}"
+        str_err = "Subsistema "+payload.subsystem + \
+            " no contiene parametro "+payload.param_name
         response = api_models.UpdateSystemResponse.buildFailure(str_err)
         return build_response(response)
 
@@ -83,7 +84,7 @@ def update_sensing_interval(payload: api_models.UpdateSensingIntervalPayload):
     req_payload = api_models.UpdateSystemPayload(
         "processor", "sensing_interval", str(payload.sensing_interval))
 
-    req_response = requests.post(f"{API_URL}/system/update",
+    req_response = requests.post(API_URL+"/system/update",
                                  json=req_payload.as_dict()).json()
     system_update_response = api_models.UpdateSystemResponse(**req_response)
 
@@ -163,7 +164,7 @@ def soft_restart_processor():
 def soft_restart(payload: api_models.SofRestartPayload):
     _, sys_json = read_json(api_config.JSON_SYS_FILE)
 
-    subsystems: dict = sys_json["subsytems"]
+    subsystems = sys_json["subsytems"]
 
     subsystem_found, subsystem_idx = find_subsystem_index(
         subsystems, payload.subsystem)

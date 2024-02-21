@@ -58,7 +58,7 @@ def find_param_index(params, param_name):
 
 
 def build_response(res_object: api_models.BaseApiResponse):
-    http_response_code: int = 200 if res_object.success else 400
+    http_response_code = 200 if res_object.success else 400
     return make_response(res_object.as_dict(), http_response_code)
 
 
@@ -77,11 +77,11 @@ def build_response(res_object: api_models.BaseApiResponse):
 def validate_dict(type_lut: dict[str, type], _dict) -> (bool, str):
     for key in type_lut:
         if key not in _dict:
-            return (False, f"json no contiene clasve {key}")
+            return (False, "json no contiene clasve "+key)
         if type(_dict[key]) is not type_lut[key]:
             return (
                 False,
-                f"clasve {key} debe ser {type_lut[key].__name__}"
+                "clasve "+key + " debe ser " + type_lut[key].__name__
             )
     return (True, "")
 
@@ -264,7 +264,7 @@ def get_payload_as(model: api_models.BaseApiModel):
 def send_signal(pid: int, signal_number: int) -> (bool):
     try:
         os.kill(pid, signal_number)
-        print(f"Signal {signal_number} sent to process with PID {pid}")
+        print("Signal "+signal_number+" sent to process with PID "+pid)
         return True
     # todo: log
     except ProcessLookupError:
