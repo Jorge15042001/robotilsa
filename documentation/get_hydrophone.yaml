@@ -3,6 +3,8 @@ description: "Retorna los resultados del último análisis que realizó el hidr�
 
 produces:
 - "application/json"
+consumes:
+- "application/json"
 
 definitions:
   HydrophoneData:
@@ -39,7 +41,7 @@ definitions:
 parameters:
   - name: hidrophone_id
     in: path
-    type: string
+    type: string 
     required: true
     description: id del hidrófono que se quiere consultar
 

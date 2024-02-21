@@ -136,13 +136,32 @@ class GetHydrophonesResponse(BaseApiResponse):
 
 
 @dataclass
+class SoundSource:
+    name: str = ""
+    value: float = 0
+
+
+@dataclass
+class HydrophoneData:
+    increase_activity: int = -1
+    last_activity: int = -1
+    source_of_sounds: list[SoundSource] = None
+
+
+@dataclass
+class Hydrophone:
+    id: int = -1
+    results: HydrophoneData = None
+
+
+@dataclass
 class GetHydrophoneDataPayload(BaseApiPayload):
-    id: int
+    id: int = -1
 
 
 @dataclass
 class GetHydrophoneDataResponse(BaseApiResponse):
-    pass
+    hydrophone: HydrophoneData = None
 
 
 @dataclass

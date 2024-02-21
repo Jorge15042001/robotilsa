@@ -133,13 +133,36 @@ def get_hydrophones():
 
 
 @swag_from("./documentation/get_hydrophone.yaml")
-@app.route("/controller/hydrophone", methods=['GET'])
-@validate_json_payload(api_models.GetHydrophoneDataPayload,
-                       api_models.GetHydrophoneDataResponse)
-@get_payload_as_parameter(api_models.GetHydrophoneDataPayload)
-def get_hydrophone(payload: api_models.GetHydrophoneDataPayload):
-    print(payload)
-    return build_response(api_models.GetHydrophoneDataResponse.buildFailure("Not implemented"))
+@app.route("/controller/hydrophone/<id>", methods=['GET'])
+#  @validate_json_payload(api_models.GetHydrophoneDataPayload,
+#                         api_models.GetHydrophoneDataResponse)
+#  @get_payload_as_parameter(api_models.GetHydrophoneDataPayload)
+def get_hydrophone(id):
+    print()
+    print()
+    print(id)
+    print()
+    print()
+    response = api_models.GetHydrophoneDataResponse()
+    response.hydrophone = api_models.HydrophoneData()
+    response.hydrophone.source_of_sounds = [
+        api_models.SoundSource("BACKGROUND", 0.2),
+        api_models.SoundSource("SHRIMP_EATING", 0.1),
+        api_models.SoundSource("SHRIMP_AERATION", 0.1),
+        api_models.SoundSource("SHRIMP_BUGS", 0.05),
+        api_models.SoundSource("SHRIMP_LOW_DENSITY", 0.05),
+        api_models.SoundSource("FEEDER_MACHINE", 0.5),
+        api_models.SoundSource("AERATION", 0.05),
+        api_models.SoundSource("AERATION_TOO_NEAR", 0.05),
+        api_models.SoundSource("BUGS", 0.05),
+        api_models.SoundSource("ERROR_HUMAN_ACTIVITY", 0.05),
+        api_models.SoundSource("ERROR", 0.05),
+        api_models.SoundSource("ERROR_HIGH_NOISE", 0.1),
+        api_models.SoundSource("ERROR_LOW_NOISE", 0.1)
+    ]
+    response.success = True
+    response.str_err = ""
+    return build_response(response)
 
 
 @swag_from("./documentation/soft_reset_processor.yaml")
