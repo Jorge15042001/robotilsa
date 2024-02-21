@@ -46,6 +46,7 @@ class API_CONFIG(BaseApiModel):
     API_PORT: int
     DEBUG: bool
     PID_SUBSYSTEM_FILE: Callable[[str], str]
+    RESTART_SIGNAL_NUMBER: int
 
 
 @dataclass
@@ -56,6 +57,7 @@ class API_CONFIG_INTITIAL(BaseApiModel):
     DEBUG: str
     API_PORT: str
     PID_SUBSYSTEM_FILE_FORMAT: str
+    RESTART_SIGNAL_NUMBER: str
 
 
 @dataclass

@@ -148,7 +148,7 @@ def find_key_index(params, key):
     raise Exception("paramter not found")
 
 
-def read_json(PATH: str) -> (bool, dict):
+def ead_json(PATH: str) -> (bool, dict):
     try:
         json_file = open(PATH)
         json_data = js.load(json_file)
@@ -201,6 +201,17 @@ def confg_file_path() -> str:
     return argv[1] if len(argv) == 2 else ".env"
 
 
+def read_pid(path) -> (bool, int):
+    pid_file = open(path)
+    content = pid_file.read()
+    try:
+        return True, int(content)
+    except Exception as e:
+        # todo syslog
+        print(e)
+        return False, -1
+
+
 def getConfig() -> api_models.API_CONFIG:
 
     config_file = confg_file_path()
@@ -222,8 +233,9 @@ def getConfig() -> api_models.API_CONFIG:
     api_port = int(config.API_PORT)
     pid_subsystem_file_format = config.PID_SUBSYSTEM_FILE_FORMAT
 
-    def pid_path_formatter(subsystem):
-        return pid_subsystem_file_format + subsystem
+    def pid_path_formatter(subsystem_id):
+
+        return pid_subsystem_file_format.replace("subsystem_id", subsystem_id)
 
     def parse_bool(bool_str: str) -> bool:
         if (bool_str == "true" or bool_str == "1"):
@@ -239,9 +251,26 @@ def getConfig() -> api_models.API_CONFIG:
                                  api_port,
                                  pid_path_formatter,
                                  debug,
+                                 int(config.RESTART_SIGNAL_NUMBER)
                                  )
 
 
 def get_payload_as(model: api_models.BaseApiModel):
     json_data = request.get_json()
     return model(**json_data)
+
+
+def send_signal(pid: int, signal_number: int) -> (bool):
+    try:
+        os.kill(pid, signal_number)
+        print(f"Signal {signal_number} sent to process with PID {pid}")
+        return True
+    # todo: log
+    except ProcessLookupError:
+        print(f"Process with PID {pid} not found.")
+    except PermissionError:
+        print(
+            f"Permission error: Unable to send signal to process with PID {pid}.")
+    except OSError as e:
+        print(f"Error: {e}")
+    return False

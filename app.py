@@ -1,4 +1,4 @@
-from utils import find_subsystem_index, set_system_time, read_json, format_hydrophones, build_response, validate_json_payload,  validate_dict, find_param_index, write_json, hardrestart_system,  getConfig, get_payload_as, get_payload_as_parameter, build_response
+from utils import find_subsystem_index, set_system_time, read_json, format_hydrophones, build_response, validate_json_payload,  validate_dict, find_param_index, write_json, hardrestart_system,  getConfig, get_payload_as, get_payload_as_parameter, build_response, read_pid, send_signal
 #  from utils import *
 import subprocess
 from flask import Flask, request
@@ -57,9 +57,15 @@ def update_system(payload: api_models.UpdateSystemPayload):
 
     # TODO: restart system
     # TODO: response
-    response = api_models.UpdateSystemResponse.buildFailure(
-        "Not implemented: restart subsystem")
-    return build_response(response)
+    soft_restart_payload = api_models.SofRestartPayload(payload.subsystem)
+    soft_restart_res = api_models.SofRestartResponse(
+        **soft_restart(soft_restart_payload).json())
+    if not soft_restart_res.success:
+        response = api_models.UpdateSystemResponse.buildFailure(
+            soft_restart_res.str_err)
+        return build_response(response)
+
+    return build_response(api_models.UpdateSystemResponse.buildSuccess())
 
 
 @swag_from("./documentation/sensing_interval.yaml")
@@ -139,8 +145,14 @@ def get_hydrophone(payload: api_models.GetHydrophoneDataPayload):
 @swag_from("./documentation/soft_reset_processor.yaml")
 @app.route("/system/soft_reset_processor", methods=['POST'])
 def soft_restart_processor():
+    soft_restart_payload = api_models.SofRestartPayload("processor")
+    soft_restart_response = api_models.SofRestartResponse(
+        soft_restart(soft_restart_payload).json())
 
-    return build_response(api_models.SofRestartProcessorResponse.buildFailure("Not implemented"))
+    return build_response(api_models.SofRestartProcessorResponse(
+        soft_restart_response.success,
+        soft_restart_response.str_err
+    ))
 
 
 @swag_from("./documentation/soft_reset.yaml")
@@ -149,12 +161,37 @@ def soft_restart_processor():
                        api_models.SofRestartResponse)
 @get_payload_as_parameter(api_models.SofRestartPayload)
 def soft_restart(payload: api_models.SofRestartPayload):
+    _, sys_json = read_json(api_config.JSON_SYS_FILE)
 
-    return build_response(api_models.SofRestartResponse.buildFailure("Not implemented"))
+    subsystems: dict = sys_json["subsytems"]
+
+    subsystem_found, subsystem_idx = find_subsystem_index(
+        subsystems, payload.subsystem)
+
+    if not subsystem_found:
+        response = api_models.SofRestartResponse.buildFailure(
+            "Subsistema no existe")
+        return build_response(response)
+    subsystem_id = sys_json["subsytems"][subsystem_idx]["id"]
+    pid_file = api_config.PID_SUBSYSTEM_FILE(str(subsystem_id))
+
+    pid_read, subsystem_pid = read_pid(pid_file)
+    if not pid_read:
+        response = api_models.SofRestartResponse.buildFailure(
+            "No se encontro pid del subsistema")
+        return build_response(response)
+
+    signal_sent = send_signal(subsystem_pid, api_config.RESTART_SIGNAL_NUMBER)
+    if not signal_sent:
+        response = api_models.SofRestartResponse.buildFailure(
+            "Señal de reinicio no enviada al subsistema")
+        return build_response(response)
+
+    return build_response(api_models.SofRestartResponse.buildSuccess())
 
 
-@swag_from("./documentation/hard_reset.yaml")
-@app.route("/system/hard_reset", methods=['POST'])
+@ swag_from("./documentation/hard_reset.yaml")
+@ app.route("/system/hard_reset", methods=['POST'])
 def hard_restart():
     hardrestart_system(5)
     return build_response(api_models.HardRestartResponse.buildFailure("Not implemented"))
