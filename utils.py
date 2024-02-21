@@ -3,7 +3,7 @@ import time
 import json as js
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 import api_data_models as api_models
 
 
