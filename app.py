@@ -12,7 +12,7 @@ import requests
 api_config = getConfig()
 
 # TODO: don't use this variable maybe put it in the .env file
-API_URL = "http://127.0.0.1:"+api_config.API_PORT
+API_URL = "http://127.0.0.1:"+str(api_config).API_PORT
 
 
 app = Flask(__name__)
@@ -43,8 +43,8 @@ def update_system(payload: api_models.UpdateSystemPayload):
         subsystem_params, payload.param_name)
 
     if not subsystem_found:
-        str_err = "Subsistema "+payload.subsystem + \
-            " no contiene parametro "+payload.param_name
+        str_err = "Subsistema "+str(payload.subsystem) + \
+            " no contiene parametro "+str(payload.param_name)
         response = api_models.UpdateSystemResponse.buildFailure(str_err)
         return build_response(response)
 

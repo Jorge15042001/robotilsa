@@ -77,11 +77,11 @@ def build_response(res_object: api_models.BaseApiResponse):
 def validate_dict(type_lut: dict[str, type], _dict) -> (bool, str):
     for key in type_lut:
         if key not in _dict:
-            return (False, "json no contiene clasve "+key)
+            return (False, "json no contiene clasve "+str(key))
         if type(_dict[key]) is not type_lut[key]:
             return (
                 False,
-                "clasve "+key + " debe ser " + type_lut[key].__name__
+                "clasve "+str(key) + " debe ser " + str(type_lut[key].__name__)
             )
     return (True, "")
 
@@ -215,21 +215,21 @@ def read_pid(path) -> (bool, int):
 def getConfig() -> api_models.API_CONFIG:
 
     config_file = confg_file_path()
-    config: dict = dotenv_values(config_file)
+    config = dotenv_values(config_file)
 
     valid_config, config_error = api_models.API_CONFIG_INTITIAL.validate_dict(
         config)
     if not valid_config:
         raise RuntimeError(config_error)
 
-    config: api_models.API_CONFIG_INTITIAL = api_models.API_CONFIG_INTITIAL(
+    config = api_models.API_CONFIG_INTITIAL(
         **config)
 
-    json_devices_file: str = config.JSON_DEVICES_FILE
+    json_devices_file = config.JSON_DEVICES_FILE
     json_sys_file = config.JSON_SYS_FILE
-    valid_sensing_intervals: list[int] = [int(interval) for interval in
-                                          config.VALID_SENSING_INTERVALS
-                                          .split(",")]
+    valid_sensing_intervals = [int(interval) for interval in
+                               config.VALID_SENSING_INTERVALS
+                               .split(",")]
     api_port = int(config.API_PORT)
     pid_subsystem_file_format = config.PID_SUBSYSTEM_FILE_FORMAT
 
@@ -264,16 +264,17 @@ def get_payload_as(model: api_models.BaseApiModel):
 def send_signal(pid: int, signal_number: int) -> (bool):
     try:
         os.kill(pid, signal_number)
-        print("Signal "+signal_number+" sent to process with PID "+pid)
+        print("Signal "+str(signal_number) +
+              " sent to process with PID "+str(pid))
         return True
     # todo: log
     except ProcessLookupError:
-        print(f"Process with PID {pid} not found.")
+        print("Process with PID "+str(pid)+" not found.")
     except PermissionError:
         print(
-            f"Permission error: Unable to send signal to process with PID {pid}.")
+            "Permission error: Unable to send signal to process with PID "+str(pid)+".")
     except OSError as e:
-        print(f"Error: {e}")
+        print("Error: "+str(e))
     return False
 
 
@@ -288,7 +289,7 @@ def parse_date_to_timestamp(date_string: str) -> (bool, float):
         return True, timestamp
 
     except ValueError as e:
-        print(f"Error: {e}")
+        print("Error: "+str(e))
         return False, 0
 
 
