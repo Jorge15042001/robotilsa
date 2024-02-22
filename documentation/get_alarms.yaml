@@ -17,7 +17,7 @@ definitions:
       emited:
         type: integer
         example: 2
-      id_devide:
+      id_device:
         type: integer
         example: 16
       message:

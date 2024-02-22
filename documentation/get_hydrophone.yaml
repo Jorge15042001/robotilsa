@@ -8,6 +8,9 @@ definitions:
   HydrophoneData:
     type: object
     properties:
+      timestamp:
+        type: integer
+        example: 1708609714
       id:
         type: integer
         example: 16
@@ -29,7 +32,7 @@ definitions:
     properties:
       name:
         type: string
-        enum: [ "BACKGROUND", "SHRIMP_EATING", "SHRIMP_AERATION", "SHRIMP_BUGS", "SHRIMP_LOW_DENSITY", "FEEDER_MACHINE", "AERATION", "AERATION_TOO_NEAR", "BUGS", "ERROR_HUMAN_ACTIVITY", "ERROR", "ERROR_HIGH_NOISE", "ERROR_LOW_NOISE"] 
+        enum: [ "BACKGROUND", "SHRIMP_EATING",  "FEEDER_MACHINE", "AERATION",  "BUGS", "ERROR_HUMAN_ACTIVITY", "ERROR", "ERROR_HIGH_NOISE", "ERROR_LOW_NOISE"] 
 
       percent:
         type: number

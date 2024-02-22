@@ -1,5 +1,5 @@
 summary: "Ajusar el intervalo de muestreo"
-description: "Permite ajustar el intervalo de muestreo a uno de los siguientes valores: [2min, 5 min (defecto), 10min, 15 min, 30 min]. El intervalo seleccionado debe ser un entero expresado en jsegundos."
+description: "Permite ajustar el intervalo de muestreo a uno de los siguientes valores: [2min, 5 min (defecto), 10min, 15 min, 30 min]. El intervalo seleccionado debe ser un entero expresado en segundos."
 consumes:
 - "application/json"
 

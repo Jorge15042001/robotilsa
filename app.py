@@ -148,12 +148,8 @@ def get_hydrophone(id):
     response.hydrophone.source_of_sounds = [
         api_models.SoundSource("BACKGROUND", 0.2),
         api_models.SoundSource("SHRIMP_EATING", 0.1),
-        api_models.SoundSource("SHRIMP_AERATION", 0.1),
-        api_models.SoundSource("SHRIMP_BUGS", 0.05),
-        api_models.SoundSource("SHRIMP_LOW_DENSITY", 0.05),
         api_models.SoundSource("FEEDER_MACHINE", 0.5),
         api_models.SoundSource("AERATION", 0.05),
-        api_models.SoundSource("AERATION_TOO_NEAR", 0.05),
         api_models.SoundSource("BUGS", 0.05),
         api_models.SoundSource("ERROR_HUMAN_ACTIVITY", 0.05),
         api_models.SoundSource("ERROR", 0.05),
