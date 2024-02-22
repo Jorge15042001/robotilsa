@@ -19,7 +19,7 @@ app = Flask(__name__)
 swagger = Swagger(app)
 
 
-@swag_from("./documentation/update_system.yaml")
+#  @swag_from("./documentation/update_system.yaml")
 @app.route("/system/update", methods=['POST'])
 @validate_json_payload(api_models.UpdateSystemPayload,
                        api_models.UpdateSystemResponse)
@@ -178,7 +178,7 @@ def soft_restart_processor():
     ))
 
 
-@swag_from("./documentation/soft_reset.yaml")
+#  @swag_from("./documentation/soft_reset.yaml")
 @app.route("/system/soft_reset", methods=['POST'])
 @validate_json_payload(api_models.SofRestartPayload,
                        api_models.SofRestartResponse)
