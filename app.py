@@ -217,7 +217,7 @@ def soft_restart(payload: api_models.SofRestartPayload):
 @ app.route("/system/hard_reset", methods=['POST'])
 def hard_restart():
     hardrestart_system(5)
-    return build_response(api_models.HardRestartResponse.buildFailure("Not implemented"))
+    return build_response(api_models.HardRestartResponse.buildSuccess())
 
 
 @swag_from("./documentation/get_alarms.yaml")
