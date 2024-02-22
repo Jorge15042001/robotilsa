@@ -99,7 +99,7 @@ def get_payload_as_parameter(model: api_models.BaseApiModel):
                 # TODO: log
                 print(e)
 
-                return build_response(False, "Error desconocido")
+                return build_response(False, "Error desconocido getting paremeter")
         return wrapper
     return decorator
 
@@ -118,7 +118,7 @@ def validate_json_payload(model: api_models.BaseApiModel, response_model: api_mo
             except Exception as e:
                 # TODO: log
                 print(e)
-                return build_response(response_model(False, "Error desconocido"))
+                return build_response(response_model(False, "Error desconocido validating payload"))
         return wrapper
     return decorator
 
