@@ -1,0 +1,10 @@
+2030_06_13__18:02:16.619856;{"alarm_code":603,"emited":2,"id_divice":16,"message":"Low noise, try to move hydrophone","type":1}
+2030_06_13__18:02:16.618417;{"alarm_code":602,"emited":2,"id_divice":16,"message":"Recordings has registered stranger audios!","type":1}
+2030_06_13__17:56:10.910970;{"alarm_code":603,"emited":2,"id_divice":16,"message":"Low noise, try to move hydrophone","type":1}
+2030_06_13__17:56:10.909527;{"alarm_code":602,"emited":2,"id_divice":16,"message":"Recordings has registered stranger audios!","type":1}
+2030_06_13__17:50:05.409227;{"alarm_code":603,"emited":2,"id_divice":16,"message":"Low noise, try to move hydrophone","type":1}
+2030_06_13__17:50:05.160303;{"alarm_code":602,"emited":2,"id_divice":16,"message":"Recordings has registered stranger audios!","type":1}
+2030_06_13__17:43:59.484201;{"alarm_code":603,"emited":2,"id_divice":16,"message":"Low noise, try to move hydrophone","type":1}
+2030_06_13__17:43:59.482703;{"alarm_code":602,"emited":2,"id_divice":16,"message":"Recordings has registered stranger audios!","type":1}
+2030_06_13__17:37:53.783527;{"alarm_code":603,"emited":2,"id_divice":16,"message":"Low noise, try to move hydrophone","type":1}
+2030_06_13__17:37:53.782039;{"alarm_code":602,"emited":2,"id_divice":16,"message":"Recordings has registered stranger audios!","type":1}
