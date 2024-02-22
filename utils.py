@@ -202,9 +202,9 @@ def confg_file_path() -> str:
 
 
 def read_pid(path) -> (bool, int):
-    pid_file = open(path)
-    content = pid_file.read()
     try:
+        pid_file = open(path)
+        content = pid_file.read()
         return True, int(content)
     except Exception as e:
         # todo syslog
@@ -234,7 +234,6 @@ def getConfig() -> api_models.API_CONFIG:
     pid_subsystem_file_format = config.PID_SUBSYSTEM_FILE_FORMAT
 
     def pid_path_formatter(subsystem_id):
-        print("getting pid file fro ", subsystem_id)
         return pid_subsystem_file_format.replace("subsystem_id", str(subsystem_id))
 
     def parse_bool(bool_str: str) -> bool:

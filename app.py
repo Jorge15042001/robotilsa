@@ -168,7 +168,9 @@ def get_hydrophone(id):
 def soft_restart_processor():
     soft_restart_payload = api_models.SofRestartPayload("processor")
     soft_restart_response = api_models.SofRestartResponse(
-        soft_restart(soft_restart_payload).json())
+        **requests.post(f"{API_URL}/system/soft_reset",
+                        json=soft_restart_payload.as_dict()).json()
+    )
 
     return build_response(api_models.SofRestartProcessorResponse(
         soft_restart_response.success,
