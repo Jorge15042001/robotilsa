@@ -1,205 +1,205 @@
 {
-  "ram_disk": "/mnt/vtfs/",
-  "rule_file": "json/rule_file.json",
-  "sensor_file": "json/hardware_devices_radio.json",
-  "subsytems": [
-    {
-      "device_file": "Controller/Monitor",
-      "enabled": true,
-      "id": 2,
-      "info": "Extraction data",
-      "name": "monitor",
-      "params": [
+    "ram_disk": "/mnt/vtfs/",
+    "rule_file": "json/rule_file.json",
+    "sensor_file": "json/hardware_devices_radio.json",
+    "subsytems": [
         {
-          "name": "n_samples",
-          "value": "500"
+            "device_file": "Controller/Monitor",
+            "enabled": true,
+            "id": 2,
+            "info": "Extraction data",
+            "name": "monitor",
+            "params": [
+                {
+                    "name": "n_samples",
+                    "value": "500"
+                },
+                {
+                    "name": "offline_mode",
+                    "value": "1"
+                }
+            ],
+            "type": 0
         },
         {
-          "name": "offline_mode",
-          "value": "1"
+            "device_file": "Controller/Control",
+            "enabled": true,
+            "id": 3,
+            "name": "control",
+            "params": [
+                {
+                    "name": "n_samples",
+                    "value": "500"
+                },
+                {
+                    "name": "rule_filename",
+                    "value": "json/rule_file.json"
+                },
+                {
+                    "name": "offline_mode",
+                    "value": "0"
+                }
+            ],
+            "type": 0
+        },
+        {
+            "device_file": "Controller/Actuator",
+            "enabled": false,
+            "id": 4,
+            "info": "Actuators on",
+            "name": "actuator",
+            "params": [
+                {
+                    "name": "n_samples",
+                    "value": "500"
+                },
+                {
+                    "name": "sync_mode",
+                    "value": "1"
+                },
+                {
+                    "name": "offline_mode",
+                    "value": "0"
+                }
+            ],
+            "samples": 5,
+            "type": 0
+        },
+        {
+            "cache": {
+                "cache_path": "./filesCache",
+                "enabled": true,
+                "max_packets_cache": 3
+            },
+            "device_file": "Controller/Communication",
+            "enabled": false,
+            "id": 5,
+            "info": "Communication on",
+            "name": "communication",
+            "params": [
+                {
+                    "name": "n_samples",
+                    "value": "500"
+                },
+                {
+                    "name": "timeout",
+                    "value": "30"
+                },
+                {
+                    "name": "server_root",
+                    "value": "/home/debian/"
+                }
+            ],
+            "retransmission": {
+                "enabled": false,
+                "package_time": 240,
+                "thread_time": 1
+            },
+            "type": 0
+        },
+        {
+            "device_file": "Controller/Scheduler",
+            "enabled": true,
+            "id": 6,
+            "info": "Feeder on",
+            "mode": {
+                "ACUSTIC": true,
+                "TIMER": false
+            },
+            "name": "Alimentador",
+            "sched_path": "Scheduler/",
+            "type": 0
+        },
+        {
+            "device_file": "./Controller/Processor",
+            "alarms_file_buffer": {
+                "path": "/home/debian/alarms/alarms.txt",
+                "max_elements": 10,
+                "max_time": -1
+            },
+            "enabled": false,
+            "id": 7,
+            "info": "Processor on",
+            "models": {
+                "pca_directory": "./Processor/models/",
+                "svm_directory": "./Processor/models/"
+            },
+            "name": "processor",
+            "params": [
+                {
+                    "name": "offline_mode",
+                    "value": "1"
+                },
+                {
+                    "name": "mode",
+                    "value": "feeder"
+                },
+                {
+                    "name": "n_samples",
+                    "value": "900"
+                },
+                {
+                    "name": "ftp_path",
+                    "value": "/home/debian/recordings/"
+                },
+                {
+                    "name": "pca_n_components",
+                    "value": "3"
+                },
+                {
+                    "name": "fft_min_band",
+                    "value": "1500"
+                },
+                {
+                    "name": "fft_max_band",
+                    "value": "10000"
+                },
+                {
+                    "name": "sample_frequency",
+                    "value": "50000"
+                },
+                {
+                    "name": "pca_filename",
+                    "value": "./models/audio_pca_eigenvectors.csv"
+                },
+                {
+                    "name": "pca_means",
+                    "value": "./models/audio_pca_means.csv"
+                },
+                {
+                    "name": "svm_model",
+                    "value": "./models/pca_training_set.svm.scale.model"
+                },
+                {
+                    "name": "svm_range",
+                    "value": "./models/range"
+                },
+                {
+                    "name": "sensing_interval",
+                    "value": "300"
+                },
+                {
+                    "name": "time_to_listen",
+                    "value": "60"
+                },
+                {
+                    "name": "wait_to_monitor",
+                    "value": "15"
+                },
+                {
+                    "name": "wait_between_measure",
+                    "value": "0"
+                },
+                {
+                    "name": "share_time_to_listen",
+                    "value": "0.05"
+                },
+                {
+                    "name": "min_time_to_listen",
+                    "value": "30"
+                }
+            ],
+            "type": 0
         }
-      ],
-      "type": 0
-    },
-    {
-      "device_file": "Controller/Control",
-      "enabled": true,
-      "id": 3,
-      "name": "control",
-      "params": [
-        {
-          "name": "n_samples",
-          "value": "500"
-        },
-        {
-          "name": "rule_filename",
-          "value": "json/rule_file.json"
-        },
-        {
-          "name": "offline_mode",
-          "value": "0"
-        }
-      ],
-      "type": 0
-    },
-    {
-      "device_file": "Controller/Actuator",
-      "enabled": false,
-      "id": 4,
-      "info": "Actuators on",
-      "name": "actuator",
-      "params": [
-        {
-          "name": "n_samples",
-          "value": "500"
-        },
-        {
-          "name": "sync_mode",
-          "value": "1"
-        },
-        {
-          "name": "offline_mode",
-          "value": "0"
-        }
-      ],
-      "samples": 5,
-      "type": 0
-    },
-    {
-      "cache": {
-        "cache_path": "./filesCache",
-        "enabled": true,
-        "max_packets_cache": 3
-      },
-      "device_file": "Controller/Communication",
-      "enabled": false,
-      "id": 5,
-      "info": "Communication on",
-      "name": "communication",
-      "params": [
-        {
-          "name": "n_samples",
-          "value": "500"
-        },
-        {
-          "name": "timeout",
-          "value": "30"
-        },
-        {
-          "name": "server_root",
-          "value": "/home/debian/"
-        }
-      ],
-      "retransmission": {
-        "enabled": false,
-        "package_time": 240,
-        "thread_time": 1
-      },
-      "type": 0
-    },
-    {
-      "device_file": "Controller/Scheduler",
-      "enabled": true,
-      "id": 6,
-      "info": "Feeder on",
-      "mode": {
-        "ACUSTIC": true,
-        "TIMER": false
-      },
-      "name": "Alimentador",
-      "sched_path": "Scheduler/",
-      "type": 0
-    },
-    {
-      "device_file": "./Controller/Processor",
-      "alarms_file_buffer": {
-        "path": "/home/debian/alarms/alarms.txt",
-        "max_elements": 10,
-        "max_time": -1
-      },
-      "enabled": false,
-      "id": 7,
-      "info": "Processor on",
-      "models": {
-        "pca_directory": "./Processor/models/",
-        "svm_directory": "./Processor/models/"
-      },
-      "name": "processor",
-      "params": [
-        {
-          "name": "offline_mode",
-          "value": "1"
-        },
-        {
-          "name": "mode",
-          "value": "feeder"
-        },
-        {
-          "name": "n_samples",
-          "value": "900"
-        },
-        {
-          "name": "ftp_path",
-          "value": "/home/debian/recordings/"
-        },
-        {
-          "name": "pca_n_components",
-          "value": "3"
-        },
-        {
-          "name": "fft_min_band",
-          "value": "1500"
-        },
-        {
-          "name": "fft_max_band",
-          "value": "10000"
-        },
-        {
-          "name": "sample_frequency",
-          "value": "50000"
-        },
-        {
-          "name": "pca_filename",
-          "value": "./models/audio_pca_eigenvectors.csv"
-        },
-        {
-          "name": "pca_means",
-          "value": "./models/audio_pca_means.csv"
-        },
-        {
-          "name": "svm_model",
-          "value": "./models/pca_training_set.svm.scale.model"
-        },
-        {
-          "name": "svm_range",
-          "value": "./models/range"
-        },
-        {
-          "name": "sensing_interval",
-          "value": "300"
-        },
-        {
-          "name": "time_to_listen",
-          "value": "60"
-        },
-        {
-          "name": "wait_to_monitor",
-          "value": "15"
-        },
-        {
-          "name": "wait_between_measure",
-          "value": "0"
-        },
-        {
-          "name": "share_time_to_listen",
-          "value": "0.05"
-        },
-        {
-          "name": "min_time_to_listen",
-          "value": "30"
-        }
-      ],
-      "type": 0
-    }
-  ]
+    ]
 }

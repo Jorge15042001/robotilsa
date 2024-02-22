@@ -27,6 +27,8 @@ swagger = Swagger(app)
 def update_system(payload: api_models.UpdateSystemPayload):
 
     _, sys_json = read_json(api_config.JSON_SYS_FILE)
+    print(api_config.JSON_SYS_FILE)
+
     #  print(sys_json)
     subsystems: dict = sys_json["subsytems"]
 
