@@ -234,8 +234,8 @@ def getConfig() -> api_models.API_CONFIG:
     pid_subsystem_file_format = config.PID_SUBSYSTEM_FILE_FORMAT
 
     def pid_path_formatter(subsystem_id):
-
-        return pid_subsystem_file_format.replace("subsystem_id", subsystem_id)
+        print("getting pid file fro ", subsystem_id)
+        return pid_subsystem_file_format.replace("subsystem_id", str(subsystem_id))
 
     def parse_bool(bool_str: str) -> bool:
         if (bool_str == "true" or bool_str == "1"):
@@ -249,8 +249,8 @@ def getConfig() -> api_models.API_CONFIG:
                                  json_sys_file,
                                  valid_sensing_intervals,
                                  api_port,
-                                 pid_path_formatter,
                                  debug,
+                                 pid_path_formatter,
                                  int(config.RESTART_SIGNAL_NUMBER),
                                  config.ALARMS_FILE
                                  )
@@ -300,9 +300,15 @@ def read_alarms(alarms_path) -> (bool, list[dict]):
         splitted_lines = [line.split(';') for line in lines]
         parsed_lines = [(parse_date_to_timestamp(date_str),  js.loads(json_str))
                         for date_str, json_str in splitted_lines]
+        parsed_lines = [pl for pl in parsed_lines if pl[0][0]]
 
         def add_timestamp_json(json_obj, timestamp):
-            json_obj["timestamp"] = timestamp
+            json_obj["timestamp"] = timestamp[1]
+            # todo fix this in ShrimpSoftware
+            if "id_divice" in json_obj:
+                json_obj["id_device"] = json_obj["id_divice"]
+                del json_obj["id_divice"]
+
             return json_obj
         alarms_formatted = [add_timestamp_json(json_alarm, timestamp)
                             for timestamp, json_alarm in parsed_lines]

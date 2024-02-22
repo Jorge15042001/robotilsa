@@ -59,7 +59,10 @@ def update_system(payload: api_models.UpdateSystemPayload):
     # TODO: response
     soft_restart_payload = api_models.SofRestartPayload(payload.subsystem)
     soft_restart_res = api_models.SofRestartResponse(
-        **soft_restart(soft_restart_payload).json())
+        **requests.post(f"{API_URL}/system/soft_reset",
+                        json=soft_restart_payload.as_dict()).json()
+    )
+
     if not soft_restart_res.success:
         response = api_models.UpdateSystemResponse.buildFailure(
             soft_restart_res.str_err)
@@ -138,11 +141,6 @@ def get_hydrophones():
 #                         api_models.GetHydrophoneDataResponse)
 #  @get_payload_as_parameter(api_models.GetHydrophoneDataPayload)
 def get_hydrophone(id):
-    print()
-    print()
-    print(id)
-    print()
-    print()
     response = api_models.GetHydrophoneDataResponse()
     response.hydrophone = api_models.HydrophoneData()
     response.hydrophone.source_of_sounds = [

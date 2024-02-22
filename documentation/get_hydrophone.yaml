@@ -3,8 +3,6 @@ description: "Retorna los resultados del último análisis que realizó el hidr�
 
 produces:
 - "application/json"
-consumes:
-- "application/json"
 
 definitions:
   HydrophoneData:
