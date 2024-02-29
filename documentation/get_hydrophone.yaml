@@ -11,22 +11,19 @@ definitions:
       timestamp:
         type: integer
         example: 1708609714
-      id:
+      device_id:
         type: integer
         example: 16
-      results:
-        type: object
-        properties:
-          increase_activity:
-            type: number
-            example: 30
-          last_activity:
-            type: number
-            exmaple: 25.2
-          source_of_sounds:
-            type: array 
-            items:
-              $ref: '#/definitions/SoundSource'
+      increase_activity:
+        type: number
+        example: 30
+      last_activity:
+        type: number
+        exmaple: 25.2
+      source_of_sounds:
+        type: array 
+        items:
+          $ref: '#/definitions/SoundSource'
   SoundSource:
     type: object
     properties:
@@ -40,7 +37,7 @@ definitions:
 
 
 parameters:
-  - name: hidrophone_id
+  - name: id
     in: path
     type: string 
     required: true
@@ -58,7 +55,7 @@ responses:
         str_err:
           type: "string"
           example: 
-        hidrophone:
+        data:
           $ref: '#/definitions/HydrophoneData'
 
   400:

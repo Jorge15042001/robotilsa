@@ -165,7 +165,7 @@ class GetHydrophoneDataPayload(BaseApiPayload):
 
 @dataclass
 class GetHydrophoneDataResponse(BaseApiResponse):
-    hydrophone: HydrophoneData = None
+    data: HydrophoneData = None
 
 
 @dataclass
