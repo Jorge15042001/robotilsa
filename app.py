@@ -154,22 +154,6 @@ def get_hydrophone(id):
 
     return build_response(api_models.GetHydrophoneDataResponse.buildSuccess(result))
 
-    #  response = api_models.GetHydrophoneDataResponse()
-    #  response.hydrophone = api_models.HydrophoneData()
-    #  response.hydrophone.source_of_sounds = [
-    #      api_models.SoundSource("BACKGROUND", 0.2),
-    #      api_models.SoundSource("SHRIMP_EATING", 0.1),
-    #      api_models.SoundSource("FEEDER_MACHINE", 0.5),
-    #      api_models.SoundSource("AERATION", 0.05),
-    #      api_models.SoundSource("BUGS", 0.05),
-    #      api_models.SoundSource("ERROR_HUMAN_ACTIVITY", 0.05),
-    #      api_models.SoundSource("ERROR", 0.05),
-    #      api_models.SoundSource("ERROR_HIGH_NOISE", 0.1),
-    #      api_models.SoundSource("ERROR_LOW_NOISE", 0.1)
-    #  ]
-    #  response.success = True
-    #  response.str_err = ""
-    #  return build_response(response)
 
 
 @swag_from("./documentation/soft_reset_processor.yaml")
