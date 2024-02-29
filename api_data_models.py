@@ -48,6 +48,7 @@ class API_CONFIG(BaseApiModel):
     PID_SUBSYSTEM_FILE: Callable[[str], str]
     RESTART_SIGNAL_NUMBER: int
     ALARMS_FILE: str
+    RESULTS_FILE: str
 
 
 @dataclass
@@ -60,6 +61,7 @@ class API_CONFIG_INTITIAL(BaseApiModel):
     PID_SUBSYSTEM_FILE_FORMAT: str
     RESTART_SIGNAL_NUMBER: str
     ALARMS_FILE: str
+    RESULTS_FILE: str
 
 
 @dataclass
@@ -143,15 +145,17 @@ class SoundSource:
 
 @dataclass
 class HydrophoneData:
+    device_id: int = -1
+    timestamp: int = -1
     increase_activity: int = -1
     last_activity: int = -1
     source_of_sounds: list[SoundSource] = None
 
 
-@dataclass
-class Hydrophone:
-    id: int = -1
-    results: HydrophoneData = None
+#  @dataclass
+#  class Hydrophone:
+#      id: int = -1
+#      results: HydrophoneData = None
 
 
 @dataclass

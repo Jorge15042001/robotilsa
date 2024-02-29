@@ -1,4 +1,4 @@
-from utils import find_subsystem_index, set_system_time, read_json, format_hydrophones, build_response, validate_json_payload,  validate_dict, find_param_index, write_json, hardrestart_system,  getConfig, get_payload_as, get_payload_as_parameter, build_response, read_pid, send_signal, parse_date_to_timestamp, read_alarms
+from utils import find_subsystem_index, set_system_time, read_json, format_hydrophones, build_response, validate_json_payload,  validate_dict, find_param_index, write_json, hardrestart_system,  getConfig, get_payload_as, get_payload_as_parameter, build_response, read_pid, send_signal, parse_date_to_timestamp, read_alarms, read_last_result
 #  from utils import *
 import subprocess
 from flask import Flask, request
@@ -143,22 +143,33 @@ def get_hydrophones():
 #                         api_models.GetHydrophoneDataResponse)
 #  @get_payload_as_parameter(api_models.GetHydrophoneDataPayload)
 def get_hydrophone(id):
-    response = api_models.GetHydrophoneDataResponse()
-    response.hydrophone = api_models.HydrophoneData()
-    response.hydrophone.source_of_sounds = [
-        api_models.SoundSource("BACKGROUND", 0.2),
-        api_models.SoundSource("SHRIMP_EATING", 0.1),
-        api_models.SoundSource("FEEDER_MACHINE", 0.5),
-        api_models.SoundSource("AERATION", 0.05),
-        api_models.SoundSource("BUGS", 0.05),
-        api_models.SoundSource("ERROR_HUMAN_ACTIVITY", 0.05),
-        api_models.SoundSource("ERROR", 0.05),
-        api_models.SoundSource("ERROR_HIGH_NOISE", 0.1),
-        api_models.SoundSource("ERROR_LOW_NOISE", 0.1)
-    ]
-    response.success = True
-    response.str_err = ""
-    return build_response(response)
+    if not str(id).isdigit():
+        return build_response(api_models.GetHydrophoneDataResponse.buildFailure("id debe se un entero"))
+
+    id = int(id)
+    result_found, result = read_last_result(api_config.RESULTS_FILE, id)
+    if not result_found:
+        return build_response(api_models.GetHydrophoneDataResponse.buildFailure("No hay resultados disponibles"))
+
+
+    return build_response(api_models.GetHydrophoneDataResponse.buildSuccess(result))
+
+    #  response = api_models.GetHydrophoneDataResponse()
+    #  response.hydrophone = api_models.HydrophoneData()
+    #  response.hydrophone.source_of_sounds = [
+    #      api_models.SoundSource("BACKGROUND", 0.2),
+    #      api_models.SoundSource("SHRIMP_EATING", 0.1),
+    #      api_models.SoundSource("FEEDER_MACHINE", 0.5),
+    #      api_models.SoundSource("AERATION", 0.05),
+    #      api_models.SoundSource("BUGS", 0.05),
+    #      api_models.SoundSource("ERROR_HUMAN_ACTIVITY", 0.05),
+    #      api_models.SoundSource("ERROR", 0.05),
+    #      api_models.SoundSource("ERROR_HIGH_NOISE", 0.1),
+    #      api_models.SoundSource("ERROR_LOW_NOISE", 0.1)
+    #  ]
+    #  response.success = True
+    #  response.str_err = ""
+    #  return build_response(response)
 
 
 @swag_from("./documentation/soft_reset_processor.yaml")

@@ -17,7 +17,7 @@ from functools import wraps
 from datetime import datetime
 from flask import request, jsonify, make_response
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Type, Tuple
 
 
 def set_system_time(unix_timestamp):
@@ -74,7 +74,7 @@ def build_response(res_object: api_models.BaseApiResponse):
 #      return make_response(response, 400)
 
 
-def validate_dict(type_lut: dict[str, type], _dict) -> (bool, str):
+def validate_dict(type_lut: dict[str, type], _dict) -> Tuple[bool, str]:
     for key in type_lut:
         if key not in _dict:
             return (False, f"json no contiene clasve {key}")
@@ -86,7 +86,7 @@ def validate_dict(type_lut: dict[str, type], _dict) -> (bool, str):
     return (True, "")
 
 
-def get_payload_as_parameter(model: api_models.BaseApiModel):
+def get_payload_as_parameter(model: Type):
     def decorator(func):
         @ wraps(func)
         def wrapper(*args, **kwargs):
@@ -104,7 +104,7 @@ def get_payload_as_parameter(model: api_models.BaseApiModel):
     return decorator
 
 
-def validate_json_payload(model: api_models.BaseApiModel, response_model: api_models.BaseApiResponse = api_models.BaseApiResponse):
+def validate_json_payload(model: Type, response_model: Type = api_models.BaseApiResponse):
     def decorator(func):
         @ wraps(func)
         def wrapper(*args, **kwargs):
@@ -251,11 +251,12 @@ def getConfig() -> api_models.API_CONFIG:
                                  debug,
                                  pid_path_formatter,
                                  int(config.RESTART_SIGNAL_NUMBER),
-                                 config.ALARMS_FILE
+                                 config.ALARMS_FILE,
+                                 config.RESULTS_FILE
                                  )
 
 
-def get_payload_as(model: api_models.BaseApiModel):
+def get_payload_as(model: Type):
     json_data = request.get_json()
     return model(**json_data)
 
@@ -276,7 +277,7 @@ def send_signal(pid: int, signal_number: int) -> (bool):
     return False
 
 
-def parse_date_to_timestamp(date_string: str) -> (bool, float):
+def parse_date_to_timestamp(date_string: str) -> Tuple[bool, float]:
     try:
         # Parse the date string
         parsed_date = datetime.strptime(date_string, "%Y_%m_%d__%H:%M:%S.%f")
@@ -291,7 +292,7 @@ def parse_date_to_timestamp(date_string: str) -> (bool, float):
         return False, 0
 
 
-def read_alarms(alarms_path) -> (bool, list[dict]):
+def read_alarms(alarms_path) -> Tuple[bool, list[dict]]:
     try:
         alarms_file = open(alarms_path)
         lines = alarms_file.readlines()
@@ -316,3 +317,34 @@ def read_alarms(alarms_path) -> (bool, list[dict]):
         # todo: log
         print(e)
         return False, []
+
+
+def read_last_result(filename:str, hydrophone_id: int)->Tuple[bool, api_models.HydrophoneData]:
+    try:
+        file = open(filename)
+        lines = file.readlines()
+        lines = [line.strip() for line in lines]
+        splitted_lines = [line.split(';') for line in lines]
+        parsed_lines = [(parse_date_to_timestamp(date_str),  js.loads(json_str))
+                        for date_str, json_str in splitted_lines]
+        results = [(pl[0][1], pl[1]) for pl in parsed_lines if pl[0][0]]
+
+        results_of_id = [result for result in results
+                         if result[1]["device_id"] == hydrophone_id]
+
+        #  print(results_of_id)
+        now = datetime.now().timestamp()
+        latets_result_of_id = min(results_of_id, key=lambda r: now - r[0])[1]
+        print(latets_result_of_id)
+        #  del latets_result_of_id["device_id"]
+
+        hydrophone_results = api_models.HydrophoneData(**latets_result_of_id)
+        return True, hydrophone_results
+
+        print(parsed_lines)
+
+    except Exception as e:
+        print(e)
+
+    return False, api_models.HydrophoneData()
+
