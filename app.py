@@ -1,8 +1,9 @@
-from utils import find_subsystem_index, set_system_time, read_json, format_hydrophones, build_response, validate_json_payload,  validate_dict, find_param_index, write_json, hardrestart_system,  getConfig, get_payload_as, get_payload_as_parameter, build_response, read_pid, send_signal, parse_date_to_timestamp, read_alarms, read_last_result
+from utils import find_subsystem_index, get_avialable_audios, set_system_time, read_json, format_hydrophones, build_response, validate_json_payload,  validate_dict, find_param_index, write_json, hardrestart_system,  getConfig, get_payload_as, get_payload_as_parameter, build_response, read_pid, send_signal, parse_date_to_timestamp, read_alarms, read_last_result
 #  from utils import *
 import subprocess
 from flask import Flask, request
 import api_data_models as api_models
+from glob import glob
 
 from flasgger import Swagger
 from flasgger import swag_from
@@ -225,6 +226,15 @@ def get_alarms():
     response = api_models.GetAlarmsResponse.buildSuccess(alarms)
     return build_response(response)
 
+
+@swag_from("./documentation/get_audio_list.yaml")
+@app.route("/system/get_audio_list", methods=['GET'])
+def get_audio_list():
+
+    audios = get_avialable_audios(api_config.AUDIO_FOLDER)
+
+    response = api_models.GetAudiosResponse.buildSuccess(audios)
+    return build_response(response)
 
 if __name__ == "__main__":
     app.run(port=api_config.API_PORT, debug=api_config.DEBUG)

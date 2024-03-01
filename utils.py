@@ -1,6 +1,8 @@
 import syslog
+from glob import glob
 import time
 import json as js
+from os.path import getsize
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, fields
@@ -17,7 +19,7 @@ from functools import wraps
 from datetime import datetime
 from flask import request, jsonify, make_response
 from dataclasses import dataclass
-from typing import Callable, Type, Tuple
+from typing import Callable, Type, Tuple, List
 
 
 def set_system_time(unix_timestamp):
@@ -252,7 +254,8 @@ def getConfig() -> api_models.API_CONFIG:
                                  pid_path_formatter,
                                  int(config.RESTART_SIGNAL_NUMBER),
                                  config.ALARMS_FILE,
-                                 config.RESULTS_FILE
+                                 config.RESULTS_FILE,
+                                 config.AUDIO_FOLDER
                                  )
 
 
@@ -277,10 +280,10 @@ def send_signal(pid: int, signal_number: int) -> (bool):
     return False
 
 
-def parse_date_to_timestamp(date_string: str) -> Tuple[bool, float]:
+def parse_date_to_timestamp(date_string: str, date_format: str = "%Y_%m_%d__%H:%M:%S.%f") -> Tuple[bool, float]:
     try:
         # Parse the date string
-        parsed_date = datetime.strptime(date_string, "%Y_%m_%d__%H:%M:%S.%f")
+        parsed_date = datetime.strptime(date_string, date_format)
 
         # Convert the parsed date to a Unix timestamp
         timestamp = parsed_date.timestamp()
@@ -347,4 +350,24 @@ def read_last_result(filename:str, hydrophone_id: int)->Tuple[bool, api_models.H
         print(e)
 
     return False, api_models.HydrophoneData()
+
+def parse_audio_path(audio_path: str) -> Tuple[bool, api_models.AudioData]:
+    date_format = "%d-%m-%Y_%H:%M:%S.wav"
+    try:
+        audio_name = audio_path.split("/")[-1]
+        _, id_str, date_str_1, date_str_2 = audio_name.split("_")
+        date_str = "_".join([date_str_1, date_str_2])
+        hydrophone_id = int(id_str)
+        valid_timestamp, timestamp = parse_date_to_timestamp(date_str, date_format)
+        return valid_timestamp, api_models.AudioData(audio_name, int(timestamp), hydrophone_id, getsize(audio_path))
+    except Exception as e:
+        print(e)
+        return False, api_models.AudioData()
+
+def get_avialable_audios(audio_folder:str) -> List[api_models.AudioData]:
+    audio_files = glob(f"{audio_folder}/*")
+    parsed_names = [parse_audio_path(a_name) for a_name in audio_files]
+    valid_parsed = [pn[1] for pn in parsed_names if pn[0]]
+    return valid_parsed
+
 

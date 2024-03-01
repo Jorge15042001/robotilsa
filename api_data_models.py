@@ -49,6 +49,7 @@ class API_CONFIG(BaseApiModel):
     RESTART_SIGNAL_NUMBER: int
     ALARMS_FILE: str
     RESULTS_FILE: str
+    AUDIO_FOLDER: str
 
 
 @dataclass
@@ -62,6 +63,7 @@ class API_CONFIG_INTITIAL(BaseApiModel):
     RESTART_SIGNAL_NUMBER: str
     ALARMS_FILE: str
     RESULTS_FILE: str
+    AUDIO_FOLDER: str
 
 
 @dataclass
@@ -206,3 +208,21 @@ class GetAlarmsPayload(BaseApiPayload):
 @dataclass
 class GetAlarmsResponse(BaseApiResponse):
     alarms: list[object] = None
+
+
+@dataclass
+class AudioData():
+    file_name: str = ""
+    timestamp: int = -1
+    hydrophone_id: int = -1
+    size: int = -1
+
+
+@dataclass
+class GetAudiosPayload(BaseApiPayload):
+    pass
+
+
+@dataclass
+class GetAudiosResponse(BaseApiResponse):
+    audios: list[AudioData] = None

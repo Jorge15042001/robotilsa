@@ -1,0 +1,56 @@
+summary: "Endpoint para lista de audios disponibles"
+description: "Retorna una lista con los audio disponibles en el dispositivo"
+
+produces:
+- "application/json"
+
+definitions:
+  AudioFileData:
+    type: object
+    properties:
+      file_name:
+        type: string
+        example: "HR_16_01-03-2024_02:19:51.wav"
+      hydrophone_id:
+        type: integer
+        example: 16
+      size:
+        type: int 
+        example: 12000044 
+      timestamp:
+        type: int 
+        example: 1709334667
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: true
+        str_err:
+          type: "string"
+          example: 
+        audios:
+          type: "array"
+          items: 
+            $ref: '#/definitions/AudioFileData'
+
+  400:
+    description: "Failure"
+    schema:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+          example: false
+        str_err:
+          type: "string"
+          example: "No se pudo encontrar archivos"
+        audios:
+          type: "array"
+          items:
+            $ref: '#/definitions/AudioFileData'
+          example: []
+
