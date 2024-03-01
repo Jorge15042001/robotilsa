@@ -1,0 +1,21 @@
+summary: "Endpoint para descargar audio"
+# description: "Retorna una lista con los audio disponibles en el dispositivo"
+
+produces:
+- "audio/wav"
+
+parameters:
+  - name: audio_file
+    in: path
+    type: string 
+    required: true
+    description: nombre del archivo de audio a descargar
+
+responses:
+  200:
+    description: "Success"
+    schema:
+      type: "file"
+
+  400:
+    description: "Failure"

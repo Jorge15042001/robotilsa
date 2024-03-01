@@ -1,7 +1,7 @@
 from utils import find_subsystem_index, get_avialable_audios, set_system_time, read_json, format_hydrophones, build_response, validate_json_payload,  validate_dict, find_param_index, write_json, hardrestart_system,  getConfig, get_payload_as, get_payload_as_parameter, build_response, read_pid, send_signal, parse_date_to_timestamp, read_alarms, read_last_result
 #  from utils import *
 import subprocess
-from flask import Flask, request
+from flask import Flask, make_response, request, redirect, send_file, Response
 import api_data_models as api_models
 from glob import glob
 
@@ -235,6 +235,19 @@ def get_audio_list():
 
     response = api_models.GetAudiosResponse.buildSuccess(audios)
     return build_response(response)
+
+@swag_from("./documentation/download_audio.yaml")
+@app.route("/system/download_audio/<audio_file>", methods=['GET'])
+def download_audio(audio_file):
+    audios = get_avialable_audios(api_config.AUDIO_FOLDER)
+    audio_names = [audio.file_name for audio in audios]
+    if not audio_file in audio_names:
+        return Response(status=400)
+
+    return send_file(f"{api_config.AUDIO_FOLDER}/{audio_file}")
+
+    #  response = api_models.GetAudiosResponse.buildSuccess(audios)
+    #  return build_response(response)
 
 if __name__ == "__main__":
     app.run(port=api_config.API_PORT, debug=api_config.DEBUG)
